@@ -1,5 +1,8 @@
 # 电视直播 App 源清单：一行一个 m3u 地址，# 开头是注释
 # 总开关 = 本仓库：转 private 或删掉本文件，App 立刻退回内置兜底源
+# 国内直连清单放最前：这些线路服务器在国内，国内宽带播国内台不用绕境外中转（绕了必卡）
+https://raw.githubusercontent.com/YH-Music/tv-sources/main/cn_direct.m3u
+https://cdn.jsdelivr.net/gh/YH-Music/tv-sources@main/cn_direct.m3u
 https://raw.githubusercontent.com/Guovin/iptv-api/gd/output/ipv4/result.m3u
 https://cdn.jsdelivr.net/gh/YanG-1989/m3u@main/Gather.m3u
 https://iptv-org.github.io/iptv/countries/cn.m3u
