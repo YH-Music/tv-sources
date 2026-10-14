@@ -1,0 +1,5 @@
+# 电视直播 App 源清单：一行一个 m3u 地址，# 开头是注释
+# 总开关 = 本仓库：转 private 或删掉本文件，App 立刻退回内置兜底源
+https://raw.githubusercontent.com/Guovin/iptv-api/gd/output/ipv4/result.m3u
+https://cdn.jsdelivr.net/gh/YanG-1989/m3u@main/Gather.m3u
+https://iptv-org.github.io/iptv/countries/cn.m3u
