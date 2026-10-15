@@ -3,6 +3,7 @@
 # 镜像以 base64(.b64) 存放可绕开 Gitee 机器审查，App 自动解码；GitHub 侧保留 .m3u 兜底
 https://raw.giteeusercontent.com/yh-music/tv-sources/raw/main/cn_direct.m3u
 https://raw.giteeusercontent.com/yh-music/tv-sources/raw/main/hk_tw.m3u
+https://raw.giteeusercontent.com/yh-music/tv-sources/raw/main/hk_direct.b64
 https://raw.giteeusercontent.com/yh-music/tv-sources/raw/main/mirror_guovin.b64
 https://raw.giteeusercontent.com/yh-music/tv-sources/raw/main/mirror_yang.b64
 https://raw.giteeusercontent.com/yh-music/tv-sources/raw/main/mirror_iptvorg.b64
@@ -10,3 +11,4 @@ https://raw.giteeusercontent.com/yh-music/tv-sources/raw/main/mirror_yang.m3u
 https://raw.giteeusercontent.com/yh-music/tv-sources/raw/main/mirror_iptvorg.m3u
 https://raw.githubusercontent.com/YH-Music/tv-sources/main/mirror_guovin.m3u
 https://raw.githubusercontent.com/YH-Music/tv-sources/main/cn_direct.m3u
+https://raw.githubusercontent.com/YH-Music/tv-sources/main/hk_direct.m3u
