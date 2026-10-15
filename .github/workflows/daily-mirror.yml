@@ -26,8 +26,8 @@ jobs:
               "mirror_yang.m3u":   "https://cdn.jsdelivr.net/gh/YanG-1989/m3u@main/Gather.m3u",
               "mirror_iptvorg.m3u":"https://iptv-org.github.io/iptv/countries/cn.m3u",
           }
-          # 成人/违规关键词：只扫频道名（#EXTINF 行），命中整条剔除
-          BAD = re.compile(r"成人|色情|做爱|强奸|裸|18禁|麻豆|swag|黑丝|嫩模|淫|偷拍|艳舞|一级|无码|AV作|做ai|做a片|直播女|娇喘|嫩模|少妇|换妻|淫乱|做爰|无码", re.I)
+          # 成人/违规 + 政治敏感频道名：大陆直连本来也播不了，留着只会触发 Gitee 机器审查
+          BAD = re.compile(r"成人|色情|做爱|强奸|裸|18禁|麻豆|swag|黑丝|嫩模|淫|偷拍|艳舞|一级|无码|AV作|做ai|做a片|直播女|娇喘|换妻|淫乱|做爰|大纪元|新唐人|NTD|希望之聲|声援|法轮|自由亚洲|美国之音|VOA|RFA|BBC中文|CNN|日经亚洲|镜新闻|壹新闻|壹电视|TVBS|凤凰", re.I)
 
           def fetch(url):
               req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
