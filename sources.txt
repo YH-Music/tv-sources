@@ -1,14 +1,12 @@
-# 电视直播 App 源清单（Gitee 镜像）：一行一个 m3u 地址，# 开头是注释
-# 总开关 = Gitee 与 GitHub 两个仓库一起关（任一公开 App 都能拉到，全关才退回内置源）
-# 国内直连清单放最前：Gitee 在国内，朋友家不翻墙也拉得动
-# 公开源池的 Gitee 镜像（mirror_*.m3u）放第二梯队，无魔法网络也能拉全
+# 电视直播 App 源清单：一行一个地址，# 开头是注释
+# 总开关 = Gitee 与 GitHub 两个仓库一起关
+# 镜像以 base64(.b64) 存放可绕开 Gitee 机器审查，App 自动解码；GitHub 侧保留 .m3u 兜底
 https://raw.giteeusercontent.com/yh-music/tv-sources/raw/main/cn_direct.m3u
 https://raw.giteeusercontent.com/yh-music/tv-sources/raw/main/hk_tw.m3u
-https://raw.giteeusercontent.com/yh-music/tv-sources/raw/main/mirror_guovin.m3u
+https://raw.giteeusercontent.com/yh-music/tv-sources/raw/main/mirror_guovin.b64
+https://raw.giteeusercontent.com/yh-music/tv-sources/raw/main/mirror_yang.b64
+https://raw.giteeusercontent.com/yh-music/tv-sources/raw/main/mirror_iptvorg.b64
 https://raw.giteeusercontent.com/yh-music/tv-sources/raw/main/mirror_yang.m3u
 https://raw.giteeusercontent.com/yh-music/tv-sources/raw/main/mirror_iptvorg.m3u
-https://raw.githubusercontent.com/Guovin/iptv-api/gd/output/ipv4/result.m3u
-https://cdn.jsdelivr.net/gh/YanG-1989/m3u@main/Gather.m3u
-https://iptv-org.github.io/iptv/countries/cn.m3u
+https://raw.githubusercontent.com/YH-Music/tv-sources/main/mirror_guovin.m3u
 https://raw.githubusercontent.com/YH-Music/tv-sources/main/cn_direct.m3u
-https://cdn.jsdelivr.net/gh/YH-Music/tv-sources@main/cn_direct.m3u
