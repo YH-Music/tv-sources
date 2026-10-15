@@ -1,0 +1,85 @@
+name: daily-mirror
+
+# 每天凌晨(北京时间 02:35)把公开源池镜像进本仓库并同步 Gitee：
+# 无魔法网络也能拉全频道（App 的 sources.txt 指向本仓库 mirror_*.m3u）
+on:
+  schedule:
+    - cron: "35 18 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 抓上游公开源并过滤
+        run: |
+          python3 - <<'PY'
+          import urllib.request, re, sys
+
+          UPSTREAMS = {
+              "mirror_guovin.m3u": "https://raw.githubusercontent.com/Guovin/iptv-api/gd/output/ipv4/result.m3u",
+              "mirror_yang.m3u":   "https://cdn.jsdelivr.net/gh/YanG-1989/m3u@main/Gather.m3u",
+              "mirror_iptvorg.m3u":"https://iptv-org.github.io/iptv/countries/cn.m3u",
+          }
+          # 成人/违规关键词：只扫频道名（#EXTINF 行），命中整条剔除
+          BAD = re.compile(r"成人|色情|做爱|强奸|裸|18禁|麻豆|swag|黑丝|嫩模|淫|偷拍|艳舞|一级|无码|AV作|做ai|做a片|直播女|娇喘|嫩模|少妇|换妻|淫乱|做爰|无码", re.I)
+
+          def fetch(url):
+              req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+              with urllib.request.urlopen(req, timeout=60) as r:
+                  return r.read().decode("utf-8", "ignore")
+
+          ok = True
+          for name, url in UPSTREAMS.items():
+              try:
+                  text = fetch(url)
+              except Exception as e:
+                  print(f"[跳过] {name} 上游拉取失败: {e} —— 保留旧文件")
+                  ok = False
+                  continue
+              out, skip_next = [], False
+              total = dropped = 0
+              for line in text.splitlines():
+                  if line.startswith("#EXTINF"):
+                      if BAD.search(line):
+                          skip_next, dropped = True, dropped + 1
+                          continue
+                      total += 1
+                  if skip_next and not line.startswith("#"):
+                      skip_next = False
+                      continue
+                  if not skip_next:
+                      out.append(line)
+              # 上游异常缩水（<50 台）视为故障，不覆盖好文件
+              if total < 50:
+                  print(f"[跳过] {name} 只有 {total} 台，疑似上游故障 —— 保留旧文件")
+                  ok = False
+                  continue
+              open(name, "w", encoding="utf-8").write("\n".join(out) + "\n")
+              print(f"[完成] {name}: {total} 台（剔除违规 {dropped} 条）")
+          sys.exit(0 if ok else 0)
+          PY
+
+      - name: 推 GitHub
+        run: |
+          git config user.name "tv-sync-bot" && git config user.email "bot@localhost"
+          git add mirror_*.m3u
+          git commit -q -m "每日镜像同步 $(date -u +%F\ %R)UTC" || echo "无变化"
+          git push -q origin main && echo "GitHub 完成"
+
+      - name: 推 Gitee（国内直连镜像）
+        run: |
+          git clone -q --depth 1 "https://yh-music:${GITEE_TOKEN}@gitee.com/yh-music/tv-sources.git" gtdst
+          cp mirror_*.m3u gtdst/
+          cd gtdst
+          git config user.name "tv-sync-bot" && git config user.email "bot@localhost"
+          git add mirror_*.m3u
+          git commit -q -m "每日镜像同步 $(date -u +%F\ %R)UTC" || echo "Gitee 无变化"
+          git push -q origin main && echo "Gitee 完成"
+        env:
+          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
