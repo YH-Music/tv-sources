@@ -88,8 +88,8 @@ https://txmov2.a.kwimgs.com/upic/2023/01/26/09/BMjAyMzAxMjYwOTE3NDVfNzM5MzQzNzIy
 http://live1.gatv.com.cn:85/live/GGPD.m3u8
 #EXTINF:-1 group-title="地方",泸县新闻综合
 http://lxfile.lxxcb.cn:80/nmip-media/channellive/channel103799/playlist.m3u8
-http://lxfile.lxxcb.cn/nmip-media/channellive/channel103799/playlist.m3u8?zsicd
 http://lxfile.lxxcb.cn/nmip-media/channellive/channel103799/playlist.m3u8
+http://lxfile.lxxcb.cn/nmip-media/channellive/channel103799/playlist.m3u8?zsicd
 #EXTINF:-1 group-title="央视",CETV2
 http://player.cntv.cn/standard/live_HLSDRM20180524.swf?ChannelID=cetv2&videoTVChannel=cetv2&P2PChannelID=pd://cctv_p2p_hdcetv2&tai=cetv2&VideoName=cetv2&channelID=cetv2
 #EXTINF:-1 group-title="卫视",香港卫视
