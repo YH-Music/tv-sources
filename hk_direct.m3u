@@ -47,3 +47,13 @@ https://petclub-samsungaus.amagi.tv/playlist.m3u8
 https://5ddce30eb4b55.streamlock.net/bltvhd/bltv1/playlist.m3u8
 #EXTINF:-1 group-title="港澳台", 台湾原住民电视
 https://streamipcfapp.akamaized.net/live/_definst_/live_720/key_b1500.m3u8
+#EXTINF:-1 group-title="港澳台",翡翠台
+https://10.fast.hidns.vip/163189/fct/
+#EXTINF:-1 group-title="港澳台",明珠台
+https://10.fast.hidns.vip/163189/mzt/
+#EXTINF:-1 group-title="港澳台",TVB Plus
+https://10.fast.hidns.vip/163189/tvbp/
+#EXTINF:-1 group-title="港澳台",TVB星河
+https://10.fast.hidns.vip/163189/xinghe/
+#EXTINF:-1 group-title="港澳台",ViuTV
+https://10.fast.hidns.vip/163189/viu/
