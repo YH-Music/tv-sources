@@ -5,6 +5,9 @@ name: daily-mirror
 on:
   schedule:
     - cron: "35 18 * * *"
+    # 11-04 加：傍晚第二班(北京 19:45)——晚高峰开闸前把白天新死的僵尸清掉，
+    # 观众晚上拿到的清单=按晚高峰状态刚验过；凌晨班保留管白天观众
+    - cron: "45 11 * * *"
   workflow_dispatch:
 
 permissions:
