@@ -16,13 +16,21 @@ permissions:
 jobs:
   mirror:
     runs-on: ubuntu-latest
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
 
-      - name: 抓上游公开源并过滤（违禁词 + 分片级僵尸闸）
+      - name: 抓上游公开源并过滤（违禁词 + 分片级僵尸闸·提速版）
         run: |
           python3 - <<'PY'
-          import urllib.request, urllib.error, re, sys, concurrent.futures as cf
+          import urllib.request, urllib.error, urllib.parse, re, sys, time, random, concurrent.futures as cf
+
+          # ── 提速参数（11-12 血案：旧版全量下载首个分片 + 无上限无截止，
+          #    连日撞 GitHub 6 小时墙被掐死/runner 失联。语义不变：只删明确 404/410）──
+          DEADLINE   = time.monotonic() + 20 * 60   # 全局 20 分钟硬截止，到点收工，未验的一律保留
+          POOL_BUDGET = 8 * 60                      # 单池验尸 8 分钟硬预算
+          MAX_PROBE   = 600                         # 单池最多验 600 个去重 URL，超出随机抽验、其余保留
+          TO          = 6                           # 单请求超时（秒）
 
           UPSTREAMS = {
               "mirror_guovin.m3u": "https://raw.githubusercontent.com/Guovin/iptv-api/gd/output/ipv4/result.m3u",
@@ -34,19 +42,21 @@ jobs:
 
           HDR = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
 
-          def fetch(url, t=20):
-              req = urllib.request.Request(url, headers=HDR)
+          def fetch(url, t=20, n=None, rng=False):
+              """n=最多读 n 字节（连接后读完即断，不拖全文件）；rng=带 Range 只取头部"""
+              h = dict(HDR)
+              if rng: h["Range"] = "bytes=0-%d" % ((n or 4096) - 1)
+              req = urllib.request.Request(url, headers=h)
               with urllib.request.urlopen(req, timeout=t) as r:
-                  return r.read()
+                  return r.read(n) if n else r.read()
 
-          # ── 僵尸闸（11-04 央视验尸案后加）───────────────────────────
-          # 僵尸源 = master 节目单还活着、真实视频分片已 404（实测占公开池 1/3+，
-          # 用户端症状=播放不停自动切线）。判定必须下钻到分片：节目单分文不值。
-          # 只删「明确 404/410」——文件不存在在全球哪里都是死，runner 在海外也判得准；
+          # ── 僵尸闸（11-04 央视验尸案后加；11-12 提速改造）─────────────
+          # 僵尸源 = master 节目单还活着、真实视频分片已 404。判定下钻到分片，
+          # 但 master 和分片都只读头部 4KB——判 404/410 根本不需要下载内容本体。
           # 超时/403/连不上=可能是国内源对海外封锁，一律保留，宁漏不误杀。
-          def seg_of(master_body, base):
+          def seg_of(master_head, base):
               try:
-                  seg = next(l.strip() for l in master_body.splitlines()
+                  seg = next(l.strip() for l in master_head.splitlines()
                              if l.strip() and not l.startswith("#"))
               except StopIteration:
                   return None
@@ -56,27 +66,60 @@ jobs:
                   return m.group(1) + seg if m else None
               return base.split("?")[0].rpartition("/")[0] + "/" + seg
 
+          def norm(u):
+              """URL 里中文/空格等先 percent 编码，否则 urllib 直接 UnicodeEncodeError 漏验"""
+              try:
+                  return urllib.parse.quote(u, safe=":/?=&%#@+~,;$!")
+              except Exception:
+                  return u
+
           def is_dead(u):
               """True=确定死（master 或首个分片明确 404/410）；其余一律 False(保留)"""
+              if time.monotonic() > DEADLINE:
+                  return False  # 到点未验=保留
+              u = norm(u)
               try:
-                  body = fetch(u, 10)
+                  body = fetch(u, TO, n=4096, rng=True)
               except urllib.error.HTTPError as e:
                   return e.code in (404, 410)
               except Exception:
                   return False
               if b"#EXTM3U" not in body[:2048]:
-                  return False  # 非 m3u8（mp4/ts 直连或 html）：无法按分片判，保留
+                  return False  # 非 m3u8（mp4/ts 直连或 html）或文件过短：无法按分片判，保留
               s = seg_of(body.decode("utf-8", "ignore"), u)
               if not s: return False
               try:
-                  fetch(s, 10)
+                  fetch(s, TO, n=4096, rng=True)
                   return False
               except urllib.error.HTTPError as e:
                   return e.code in (404, 410)
               except Exception:
                   return False
 
+          def probe_pool(urls, name):
+              urls = sorted(set(urls))
+              if len(urls) > MAX_PROBE:
+                  random.seed(42)
+                  probe = random.sample(urls, MAX_PROBE)
+                  print(f"[抽检] {name} 去重 URL {len(urls)} 条超上限，抽验 {MAX_PROBE} 条，其余保留")
+              else:
+                  probe = urls
+              dead = set()
+              ex = cf.ThreadPoolExecutor(32)
+              futs = {ex.submit(is_dead, u): u for u in probe}
+              try:
+                  for f in cf.as_completed(futs, timeout=POOL_BUDGET):
+                      try:
+                          if f.result(): dead.add(futs[f])
+                      except Exception:
+                          pass
+              except TimeoutError:
+                  print(f"[到时] {name} 验尸超 8 分钟预算，未验完的一律保留")
+              ex.shutdown(wait=False, cancel_futures=True)
+              return dead
+
           ok = True
+          t0 = time.monotonic()
           for name, url in UPSTREAMS.items():
               try:
                   text = fetch(url, 60).decode("utf-8", "ignore")
@@ -106,11 +149,7 @@ jobs:
                       entries.append((pending_inf, s))
                       pending_inf = None
               # 第二遍：分片级僵尸验尸（仅 http/https 可测；rtmp 等原样保留）
-              urls = sorted(set(u for _, u in entries if u.startswith("http")))
-              dead = set()
-              with cf.ThreadPoolExecutor(16) as ex:
-                  for u, d in zip(urls, ex.map(is_dead, urls)):
-                      if d: dead.add(u)
+              dead = probe_pool([u for _, u in entries if u.startswith("http")], name)
               kept = [(i, u) for i, u in entries if u not in dead]
               # 熔断：单文件删超 85%=闸误伤(上游挂了/网络故障)，保留旧文件
               # （阈值不能设太低：11-04 实测公开池僵尸率就有 70%，50% 会把正常清理也拦死）
@@ -127,7 +166,8 @@ jobs:
               for i, u in kept:
                   out.append(i); out.append(u)
               open(name, "w", encoding="utf-8").write("\n".join(out) + "\n")
-              print(f"[完成] {name}: {len(kept)}/{total} 台（违禁 {banned}、僵尸清 {total-len(kept)+0} 条）")
+              print(f"[完成] {name}: {len(kept)}/{total} 台（违禁 {banned}、僵尸清 {total-len(kept)} 条）")
+          print(f"[总耗时] {time.monotonic()-t0:.0f} 秒")
           sys.exit(0 if ok else 0)
           PY
 
