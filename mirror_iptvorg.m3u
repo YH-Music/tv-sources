@@ -103,8 +103,6 @@ http://223.110.245.161/ott.js.chinamobile.com/PLTV/3/224/3221227492/index.m3u8
 http://117.156.28.119/270000001111/1110000149/index.m3u8
 #EXTINF:-1 tvg-id="HighChannelTV.cn@SD" tvg-logo="https://upload.wikimedia.org/wikipedia/zh/2/28/%E7%94%98%E8%82%83%E5%8D%AB%E8%A7%86.png" group-title="Undefined",High Channel TV (1080p)
 http://117.156.28.119/270000001111/1110000146/index.m3u8
-#EXTINF:-1 tvg-id="HunanEconomyChannel.cn@SD" tvg-logo="https://www.tvchinese.net/uploads/tv/hnjs.jpg" group-title="General",Hunan Economy Channel
-https://p8.vzan.com/slowlive/415983998730568937/live.m3u8
 #EXTINF:-1 tvg-id="HunanNewsChannel.cn@SD" tvg-logo="https://static.tvtropes.org/pmwiki/pub/images/hunantv_logo.png" group-title="News",Hunan News Channel [Geo-blocked]
 http://35848.hlsplay.aodianyun.com/guangdianyun_35848/tv_channel_346.m3u8
 #EXTINF:-1 tvg-id="HunanPoliticsLawChannel.cn@SD" tvg-logo="https://www.tvchinese.net/uploads/tv/cszfpd.jpg" group-title="Legislative",Hunan Politics & Law Channel [Geo-blocked]
@@ -151,6 +149,8 @@ https://lsfb.avap.jilintv.cn/zqvk7vpj/channel/3ffc4824dce54b92be185555923ce382/i
 https://stream.jmtv.com.cn/xwzh/sd/live.m3u8?_upt=341f4b8e1791883036
 #EXTINF:-1 tvg-id="JiuquanTVNewsComprehensiveChannel.cn@SD" tvg-logo="https://i.imgur.com/mPkG8Gi.png" group-title="News",Jiuquan TV News Comprehensive Channel (576p)
 http://117.156.28.119/270000001111/1110000001/index.m3u8
+#EXTINF:-1 tvg-id="KangbaTV.cn@SD" tvg-logo="https://www.tvchinese.net/uploads/tv/kangbatv.jpg" group-title="General",Kangba TV
+http://110.185.237.164:8888/hls/30/index.m3u8
 #EXTINF:-1 tvg-id="LanzhouComprehensiveNewsChannel.cn@SD" tvg-logo="https://p3-pc.douyinpic.com/img/aweme-avatar/tos-cn-avt-0015_c2a13a952c0111b21f081d672798c8ed~c5_300x300.jpeg?from=2956013662" group-title="News",Lanzhou Comprehensive News Channel
 https://liveplus.lzr.com.cn/xwzh/HD/live.m3u8
 #EXTINF:-1 tvg-id="LanzhouCultureTourismChannel.cn@SD" tvg-logo="https://www.tvchinese.net/uploads/tv/lanzhou.jpg" group-title="Culture",Lanzhou Culture & Tourism Channel
